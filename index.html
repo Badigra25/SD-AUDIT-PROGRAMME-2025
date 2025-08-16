@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon programme d'audit interne</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Styles de la page de connexion --- */
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .login-container h1 {
+            color: #0056b3;
+            margin-bottom: 5px;
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        .login-container h2 {
+            color: #6c757d;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .login-container .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+
+        #login-error {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 40px;
+        }
+
+        .password-container .fa-eye, .password-container .fa-eye-slash {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        /* --- Styles de l'interface principale --- */
+        .main-interface {
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #f0f2f5;
+        }
+
+        .top-container {
+            position: sticky;
+            top: 0;
+            background-color: #f0f2f5;
+            z-index: 1001;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-container-horizontal {
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border-left: 5px solid;
+            padding: 10px;
+            border-radius: 4px;
+            transition: transform 0.2s;
+            flex: 1;
+            max-width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card.green-border {
+            border-color: #28a745;
+        }
+
+        .stat-card.red-border {
+            border-color: #dc3545;
+        }
+
+        .stat-card.blue-border {
+            border-color: #007bff;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #6c757d;
+        }
+
+        .stat-card.green-border .stat-icon {
+            color: #28a745;
+        }
+
+        .stat-card.red-border .stat-icon {
+            color: #dc3545;
+        }
+
+        .stat-card.blue-border .stat-icon {
+            color: #007bff;
+        }
+
+        .logout-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logout-logo {
+            width: 80px;
+            height: auto;
+        }
+
+        .logout-button {
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .content-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px;
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+            padding-top: 100px;
+        }
+
+        .logo {
+            max-width: 150px;
+            height: auto;
+        }
+
+        h1 {
+            color: #0056b3;
+            margin-bottom: 5px;
+            font-size: 2.5rem;
+        }
+
+        #last-updated {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        #searchFilter {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            padding-left: 50px;
+        }
+
+        #searchFilter:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        #dataDisplay {
+            min-height: 150px;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f8f9fa;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #e9ecef;
+            z-index: 10;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        .status-cell {
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .status-green {
+            background-color: #28a745;
+        }
+
+        .status-red {
+            background-color: #dc3545;
+        }
+
+        .no-data-message {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="login-page" class="login-container">
+        <div class="login-header">
+            <img src="C:\Users\HP ELITEBOOK 840 G4\Desktop\DOC DMS\images\LOGO_DMS-removebg-preview.png" alt="Logo DMS" class="logo">
+            <h1>Mon programme</h1>
+            <h2>D'AUDIT INTERNE</h2>
+        </div>
+        <form id="login-form" class="login-form">
+            <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Mot de passe" required>
+                <i class="fas fa-eye" id="toggle-password"></i>
+            </div>
+            <button type="submit">Se connecter</button>
+        </form>
+        <p id="login-error"></p>
+    </div>
+
+    <div id="main-content" class="main-interface">
+        <div class="top-container">
+            <div class="stats-container-horizontal">
+                <div class="stat-card blue-border">
+                    <i class="fas fa-list-check stat-icon"></i>
+                    <div class="stat-label">Total Missions</div>
+                    <div class="stat-value" id="total-missions">0</div>
+                </div>
+                <div class="stat-card green-border">
+                    <i class="fas fa-clipboard-check stat-icon"></i>
+                    <div class="stat-label">Missions Réalisées</div>
+                    <div class="stat-value" id="realized-missions">0</div>
+                </div>
+                <div class="stat-card red-border">
+                    <i class="fas fa-clipboard-question stat-icon"></i>
+                    <div class="stat-label">Missions Non Réalisées</div>
+                    <div class="stat-value" id="unrealized-missions">0</div>
+                </div>
+                <div class="stat-card green-border">
+                    <i class="fas fa-circle-check stat-icon"></i>
+                    <div class="stat-label">Rapports Diffusés</div>
+                    <div class="stat-value" id="diffuse-reports">0</div>
+                </div>
+                <div class="stat-card red-border">
+                    <i class="fas fa-circle-xmark stat-icon"></i>
+                    <div class="stat-label">Rapports Non diffusés</div>
+                    <div class="stat-value" id="non-diffuse-reports">0</div>
+                </div>
+            </div>
+            <div class="logout-container">
+                <img src="C:\Users\HP ELITEBOOK 840 G4\Desktop\DOC DMS\images\LOGO_DMS-removebg-preview.png" alt="Logo DMS" class="logout-logo">
+                <button id="logout-button" class="logout-button">Se déconnecter</button>
+            </div>
+        </div>
+        <div class="content-container">
+            <div class="logo-container">
+                <img src="C:\Users\HP ELITEBOOK 840 G4\Desktop\DOC DMS\images\LOGO_DMS-removebg-preview.png" alt="Logo de votre entreprise" class="logo">
+            </div>
+
+            <h1>Cherchez Votre Programme</h1>
+            <p id="last-updated"></p>
+
+            <p class="subtitle">Entrez un nom ou un mot-clé pour trouver votre programme.</p>
+
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchFilter" placeholder="Rechercher...">
+            </div>
+
+            <div id="dataDisplay">
+                <p class="no-data-message">Veuillez commencer à taper pour voir les résultats.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SPREADSHEET_ID = '143kSLU1qPfhfMqnB-Uaw9qjAs-z2MCGrewvPo0jlGzE';
+        const API_KEY = 'AIzaSyAfJDEkFh0J9K0ngYPgtYhOs5P_Q8WEyTc';
+        const SHEET_NAME = 'PROGRAMME WEB';
+        const RANGE_DATA = 'A5:I';
+        const RANGE_DATE = 'A2:A2';
+
+        const TABLE_HEADERS = ["ENTITE", "DEBUT", "FIN", "DUREE", "RESPONSABLE", "AUDITEUR 1", "AUDITEUR 2", "STATUT", "RAPPORT"];
+
+        let allData = [];
+
+        const USERNAME = 'Auditeurin2025';
+        const PASSWORD = 'SDAUDITP2025@';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const loginPage = document.getElementById('login-page');
+            const mainContent = document.getElementById('main-content');
+            const loginError = document.getElementById('login-error');
+            const logoutButton = document.getElementById('logout-button');
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const usernameInput = document.getElementById('username').value;
+                const passwordInputVal = passwordInput.value;
+
+                if (usernameInput === USERNAME && passwordInputVal === PASSWORD) {
+                    loginPage.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    fetchGoogleSheetData();
+                    fetchLastUpdatedDate();
+                } else {
+                    loginError.textContent = 'Nom d\'utilisateur ou mot de passe incorrect.';
+                    loginError.style.display = 'block';
+                }
+            });
+
+            logoutButton.addEventListener('click', () => {
+                mainContent.style.display = 'none';
+                loginPage.style.display = 'flex';
+                document.getElementById('username').value = '';
+                passwordInput.value = '';
+                loginError.style.display = 'none';
+            });
+
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePassword.classList.toggle('fa-eye-slash');
+            });
+
+            document.getElementById('searchFilter').addEventListener('keyup', (e) => {
+                const searchValue = e.target.value.trim();
+                if (searchValue.length > 0) {
+                    filterData(searchValue);
+                } else {
+                    displayData(allData);
+                    updateStats(allData);
+                }
+            });
+        });
+
+        async function fetchGoogleSheetData() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!${RANGE_DATA}?key=${API_KEY}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                allData = data.values;
+                updateStats(allData);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des données :", error);
+                displayMessage("Erreur lors du chargement des données. Veuillez vérifier la connexion.");
+            }
+        }
+
+        async function fetchLastUpdatedDate() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!${RANGE_DATE}?key=${API_KEY}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                const dateElement = document.getElementById('last-updated');
+                if (data.values && data.values.length > 0) {
+                    const date = data.values[0][0]; // CORRIGÉ: Utilisation de crochets pour accéder à l'élément
+                    dateElement.textContent = `Dernière mise à jour le ${date}`;
+                } else {
+                    dateElement.textContent = 'Date non disponible';
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération de la date de mise à jour :", error);
+                document.getElementById('last-updated').textContent = "Erreur de chargement de la date";
+            }
+        }
+
+        function updateStats(data) {
+            if (!data) return;
+
+            let totalMissions = data.length;
+            let diffusedReports = 0;
+            let nonDiffusedReports = 0;
+            let realizedMissions = 0;
+            let unrealizedMissions = 0;
+
+            data.forEach(row => {
+                const rapportStatus = String(row[8] || '').toLowerCase().trim(); // CORRIGÉ: Utilisation de crochets
+                if (rapportStatus === 'diffusé') {
+                    diffusedReports++;
+                } else if (rapportStatus === 'non diffusé') {
+                    nonDiffusedReports++;
+                }
+
+                const missionStatus = String(row[7] || '').toLowerCase().trim(); // CORRIGÉ: Utilisation de crochets
+                if (missionStatus === 'r') {
+                    realizedMissions++;
+                } else if (missionStatus === 'nr') {
+                    unrealizedMissions++;
+                }
+            });
+
+            document.getElementById('total-missions').textContent = totalMissions;
+            document.getElementById('realized-missions').textContent = realizedMissions;
+            document.getElementById('unrealized-missions').textContent = unrealizedMissions;
+            document.getElementById('diffuse-reports').textContent = diffusedReports;
+            document.getElementById('non-diffuse-reports').textContent = nonDiffusedReports;
+        }
+
+        function displayData(dataToDisplay) {
+            const dataDisplayElement = document.getElementById('dataDisplay');
+            dataDisplayElement.innerHTML = '';
+
+            if (!dataToDisplay || dataToDisplay.length === 0) {
+                displayMessage("Aucun résultat ne correspond à votre recherche.");
+                return;
+            }
+
+            const tableContainer = document.createElement('div');
+            tableContainer.classList.add('table-container');
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            const headerRow = document.createElement('tr');
+            TABLE_HEADERS.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            dataToDisplay.forEach(rowData => {
+                const tr = document.createElement('tr');
+                rowData.forEach((cellData, index) => {
+                    const td = document.createElement('td');
+                    td.textContent = cellData;
+
+                    if (index === 7) {
+                        const status = String(cellData || '').toLowerCase().trim();
+                        td.classList.add('status-cell');
+                        if (status === 'r') {
+                            td.classList.add('status-green');
+                        } else if (status === 'nr') {
+                            td.classList.add('status-red');
+                        }
+                    }
+                    else if (index === 8) {
+                        const rapportStatus = String(cellData || '').toLowerCase().trim();
+                        td.classList.add('status-cell');
+                        if (rapportStatus === 'diffusé') {
+                            td.classList.add('status-green');
+                        } else if (rapportStatus === 'non diffusé') {
+                            td.classList.add('status-red');
+                        }
+                    }
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+            dataDisplayElement.appendChild(tableContainer);
+            dataDisplayElement.classList.add('fade-in');
+        }
+
+        function filterData(filterValue) {
+            const value = filterValue.toLowerCase();
+            if (allData.length === 0) {
+                return;
+            }
+
+            const filtered = allData.filter(row => {
+                const cellE = String(row[4] || '').toLowerCase(); // CORRIGÉ: Utilisation de crochets
+                const cellF = String(row[5] || '').toLowerCase(); // CORRIGÉ: Utilisation de crochets
+                const cellG = String(row[6] || '').toLowerCase(); // CORRIGÉ: Utilisation de crochets
+                return cellE.includes(value) || cellF.includes(value) || cellG.includes(value);
+            });
+
+            displayData(filtered);
+            updateStats(filtered);
+        }
+
+        function displayMessage(message) {
+            const dataDisplayElement = document.getElementById('dataDisplay');
+            dataDisplayElement.innerHTML = `<p class="no-data-message">${message}</p>`;
+        }
+    </script>
+</body>
+</html>
